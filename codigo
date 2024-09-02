@@ -1,0 +1,358 @@
+
+use concesionario
+
+-- -------------------------------------- CREANDO LAS TABLAS -------------------------------------------------
+
+create table coches (
+ id int auto_increment not null,
+ modelo varchar(50) not null,
+ marca varchar(50) not null,
+ precio float not null,
+ stock int not null ,
+ primary key (id)
+ 
+)
+
+create table grupos (
+ id int auto_increment not null,
+ nombre varchar(50) not null,
+ ciudad varchar(50) not null,
+ primary key(id)
+)
+
+create table vendedores ( 
+ id int auto_increment not null,
+ grupo_id int not null,
+ nombre varchar(50) not null,
+ apellidos varchar (50) not null,
+ cargo mediumtext not null,
+ fecha_alta DATETIME default CURRENT_TIMESTAMP not null,
+ sueldo float not null,
+ comision float not null,
+ jefe int not null,
+ primary key (id),
+ FOREIGN key (grupo_id) REFERENCES grupos(id)
+)
+
+create table clientes (
+ id int auto_increment not null,
+ vendedor_id int not null ,
+ nombre varchar (50) not null,
+ ciudad varchar (100) not null,
+ gastos float not null ,
+ fecha_alta DATETIME default CURRENT_TIMESTAMP not null,
+ primary key (id),
+ FOREIGN key (vendedor_id) REFERENCES vendedores(id)
+)
+
+
+create table encargos (
+id int auto_increment not null,
+cliente_id int not null,
+coche_id int not null,
+cantidad int not null,
+fecha_alta DATETIME default CURRENT_TIMESTAMP not null,
+primary key (id),
+FOREIGN key (cliente_id) REFERENCES clientes(id),
+FOREIGN key (coche_id) REFERENCES coches(id)
+
+)
+
+
+
+
+-- -------------------------------------- POBLANDO LA BDT -------------------------------------------------
+
+INSERT INTO coches (modelo, marca, precio,stock) VALUES
+( 'Civic', 'Honda', 100000000, 5),
+( 'Corolla', 'Toyota', 75000000, 8),
+( 'Model 3', 'Tesla', 50000000, 12),
+('Titan', 'MegaAuto', 125000000, 3),
+('Mustang', 'Ford', 85000500, 6),
+('A4', 'Audi', 95371500, 7),
+('Camry', 'Toyota', 200000000, 2);
+
+
+
+
+
+INSERT INTO grupos (nombre, ciudad) VALUES
+('Vendedores A', 'Madrid'),
+('Director mecanico', 'Madrid'),
+('Vendedores C', 'Valencia'),
+('Vendedores D', 'Sevilla'),
+('Vendedores C', 'Bilbao'),
+('Vendedores C', 'Zaragoza'),
+('Vendedores D', 'Málaga'),
+('Vendedores C', 'Murcia'),
+('Vendedores A', 'Palma'),
+('Vendedores D', 'Granada');
+
+
+
+
+INSERT INTO vendedores (grupo_id, nombre, apellidos, cargo, fecha_alta, sueldo, comision, jefe) VALUES
+(1, 'Carlos', 'Pérez', 'Gerente de Ventas', '2024-01-15 09:30:00', 5550000, 5, 0),
+(2, 'María', 'Rodríguez', 'Asistente de Ventas', '2023-11-22 11:00:00', 3000000, 2, 1),
+(4, 'Juan', 'García', 'Vendedor Senior', '2023-05-10 14:45:00', 4055000, 3, 1),
+(3, 'Ana', 'Martínez', 'Vendedor Junior', '2024-03-01 10:15:00', 1355000, 5, 3),
+(5, 'Luis', 'López', 'Gerente de Área', '2022-07-19 08:00:00', 5550000, 4, 0),
+(6, 'Elena', 'Hernández', 'Especialista en Ventas', '2023-09-25 16:30:00', 4000000, 10, 1),
+(7, 'José', 'González', 'Vendedor Senior', '2024-01-10 13:20:00', 4700000, 5, 3),
+(8, 'Sara', 'Díaz', 'Vendedor Junior', '2023-12-15 09:50:00', 1355000, 3, 2),
+(9, 'Miguel', 'Sánchez', 'Asistente de Ventas', '2023-02-14 12:10:00', 1355000, 0, 3),
+(3, 'Julian', 'Sánchez', 'Asistente de Ventas', '2023-02-14 12:10:00', 1355000, 0, 3),
+(10, 'Laura', 'Gómez', 'Gerente de Zona', '2022-04-05 10:00:00', 7500000, 10, 0);
+
+
+ -- 2 3 4 7 8 9 10
+
+INSERT INTO clientes (vendedor_id, nombre, ciudad, gastos, fecha_alta) VALUES
+(4, 'Juan López', 'Bogotá', 55150750, '2024-01-10 10:15:00'),
+(8, 'Marta Pérez', 'Medellín', 23000500, '2023-12-05 14:30:00'),
+(2, 'Luis García', 'Cali', 170000000, '2024-02-20 09:45:00'),
+(4, 'Ana Martínez', 'Barranquilla', 200800200, '2023-11-15 11:30:00'),
+(3, 'Pedro Hernández', 'Cartagena', 15500300, '2024-01-25 16:00:00'),
+(2, 'Laura Sánchez', 'Bucaramanga', 199999999, '2023-10-05 13:20:00'),
+(7, 'Carmen Fernández', 'Pereira', 125040040, '2024-03-10 08:50:00'),
+(8, 'José Ruiz', 'Manizales', 300000000, '2023-09-12 12:40:00'),
+(9, 'Lucía Gómez', 'Santa Marta', 90000000, '2024-01-17 10:00:00'),
+(10, 'Carlos Díaz', 'Ibagué', 220060060, '2023-11-27 17:30:00');
+
+INSERT INTO clientes (vendedor_id, nombre, ciudad, gastos, fecha_alta) VALUES
+(10, 'Carlos Díaz', 'Ibagué', 220060060, '2023-11-27 17:30:00');
+
+
+
+INSERT INTO encargos (cliente_id, coche_id, cantidad, fecha_alta) VALUES
+(1, 2, 3, '2024-01-12 11:30:00'),  -- Juan López pide 3 coches con ID 2
+(2, 1, 1, '2024-02-15 14:00:00'),  -- Marta Pérez pide 1 coche con ID 1
+(3, 4, 2, '2024-03-20 09:45:00'),  -- Luis García pide 2 coches con ID 4
+(4, 3, 5, '2024-01-18 16:00:00'),  -- Ana Martínez pide 5 coches con ID 3
+(5, 5, 1, '2024-02-10 12:20:00'),  -- Pedro Hernández pide 1 coche con ID 5
+(6, 2, 4, '2024-03-05 10:00:00'),  -- Laura Sánchez pide 4 coches con ID 2
+(7, 1, 2, '2024-01-30 08:50:00'),  -- Carmen Fernández pide 2 coches con ID 1
+(8, 4, 3, '2024-02-25 14:30:00'),  -- José Ruiz pide 3 coches con ID 4
+(9, 3, 2, '2024-02-05 10:15:00'),  -- Lucía Gómez pide 2 coches con ID 3
+(10, 5, 1, '2024-03-01 15:45:00'); -- Carlos Díaz pide 1 coche con ID 5
+
+insert into encargos (cliente_id, coche_id, cantidad, fecha_alta) VALUES
+(10,2, 3, '2024-03-01 15:45:00'); 
+insert into encargos (cliente_id, coche_id, cantidad, fecha_alta) VALUES
+(10,4, 3, '2024-03-01 15:45:00'); 
+
+insert into encargos (cliente_id, coche_id, cantidad, fecha_alta) VALUES
+(11,4, 3, '2024-03-01 15:45:00'); 
+
+-- -------------------------------------------------- CONSULTAS ------------------------------------------------------------------
+-- Modificar la comision a 2% de un vendedor cuando su sueldo sea igual o mayor a 1355000 
+update vendedores  set comision = 2 where cargo like ("%vendedor%") and sueldo >= 1355000 
+
+
+-- Incrementar el precio de los coches en un 2%
+
+update coches  set precio = (precio * 0.02) + precio where precio <= 100000000
+
+-- Mostrar a todos los vendedores cuya fecha sea inferiorl al 2023
+
+select  * from vendedores where fecha_alta < "2023-01-01"
+
+-- Mostar el nombre del vendedor y al lado mostrar los dias que lleva trabajando 
+
+ select  nombre ,  DATEDIFF(CURDATE(), fecha_alta ) as Dias_trabajados from vendedores order by Dias_trabajados desc ;
+
+
+-- visualizar el nombre y los apellidos de los vendedores en una misma columna y su fecha de registro y el dia de la semana que 
+-- se registraron 
+select concat(nombre ," " , apellidos) as nombre , fecha_alta as fecha_ingreso , DAYNAME(fecha_alta)   from vendedores 
+
+
+-- mostrar el nombre y el salario de los vendedores snior 
+select concat(nombre," ",apellidos)  , sueldo from vendedores where cargo = "Vendedor Senior"
+
+
+
+-- visualizar todos los coches cuya marca contenga una O y en el modelo empice por C  
+
+select * from coches where  marca like("%o%") and modelo like("c%")
+
+
+-- mostrar todos los vendedores (solo vendedores ) del grupo A ordenados por salario de mayor a menor 
+
+select v.nombre,v.sueldo 
+from vendedores v
+inner join grupos g on v.grupo_id = g.id 
+where g.nombre = "Vendedores A"
+order by sueldo desc
+
+
+-- mostrar los apellidos de los vendedores su fecha y su grupo , ordenado por fecha desendente 
+
+select v.apellidos , v.fecha_alta , g.nombre 
+from vendedores v 
+inner join grupos g on v.grupo_id = g.id
+where g.nombre like("Vendedores%")
+order by fecha_alta desc  
+
+
+
+-- visualizar todos los grupos y contar cuantos empleados hay en cada grupo 
+
+select  g.nombre , count(v.grupo_id) as numero_empleados
+from grupos g 
+inner join vendedores v on v.grupo_id = g.id
+group by nombre
+
+
+-- visualizar los cargos y mostrar cuantos empleados pertenecene a ese mismo cargo 
+
+select cargo, count(id) from vendedores group by cargo
+
+
+-- visualizar el pago de nomina anual de la empresa 
+
+select (sum(sueldo)*12) as nomina_total_anual from vendedores 
+
+-- sacar la media de sueldos de los vendedores por grupos 
+
+select g.nombre, count(v.grupo_id) as trabajadores , sum(v.sueldo) as sueldo_total , avg(v.sueldo) as media_sueldo 
+from grupos g
+inner join vendedores v on v.grupo_id = g.id
+group by g.nombre
+
+-- visualizar las unidades totales vendidas de cada coche, a cada cliente , mostrando el nombre del producto , el id del cliente
+
+select e.cantidad as encargos , c.id as "id_coche", c.modelo, cl.id as id_cliente,cl.nombre as nombre_cliente
+from encargos e 
+inner join coches c on e.coche_id = c.id
+inner join clientes cl on e.cliente_id = cl.id
+
+
+-- mostrar los 2 clientes con mas pedidos hechos y mostar cuantos hcieron 
+
+select cl.nombre, sum(en.cantidad) as total
+from clientes cl 
+inner join encargos en on en.cliente_id = cl.id
+group by cl.nombre 
+order by total desc limit 2
+
+-- obtener el listado de clientes atendidos por Sara Díaz
+
+select cl.nombre as nombre_cliente 
+from clientes cl 
+inner join vendedores v on cl.vendedor_id = v.id
+where concat(v.nombre," " , v.apellidos)  = "Carlos Pérez"
+
+
+-- cambiele a un cliente el vendor 
+update clientes cl 
+inner join vendedores v on cl.vendedor_id = v.id
+set cl.vendedor_id = 1	
+where cl.nombre = "José Ruiz"
+
+
+-- listar los encargos de un clientes por su nombre 
+
+select co.modelo,co.marca,co.precio , en.cantidad
+from coches co
+inner join encargos en on en.coche_id = co.id
+inner join clientes cl on en.cliente_id = cl.id
+where cl.nombre = "Carlos Díaz"
+
+-- otra forma 
+select * from encargos where cliente_id in ( select id from clientes where nombre = "Carlos Díaz")
+
+
+
+
+-- listar lo clientes y el nombre del vendedor que los atendio que compraron el coche del modelo Titan
+
+select cl.nombre ,   concat(v.nombre ," " , v.apellidos) as nombre_vendedor ,cl.vendedor_id
+from clientes cl
+inner join encargos en on en.cliente_id = cl.id
+inner join coches co on en.coche_id = co.id 
+inner join vendedores v on cl.vendedor_id = v.id
+where co.modelo = "titan"
+
+
+-- obtner los vendedores con 2 o mas clientes 
+
+select v.nombre ,count(c.vendedor_id) as cantidad_clientes
+from clientes c
+inner join vendedores v on c.vendedor_id = v.id
+group by v.nombre 
+having cantidad_clientes >= 2 
+
+
+
+-- seleccionar el grupo del trabajador que tiene mas salario y visualizar el nombre del grupo 
+
+
+select g.nombre as nombre_del_grupo , g.ciudad, v.nombre as nombre_del_trabajador , v.sueldo as sueldo_neto
+from vendedores v
+inner join grupos g on v.grupo_id = g.id
+order by  sueldo_neto desc limit 1
+
+
+
+-- Optener el nombre y la ciudad de los clientes que tienen mas de 3 encargos
+
+
+select c.nombre , c.ciudad , sum(e.cantidad) as cantidad_encargo
+from clientes c 
+inner join encargos e on e.cliente_id = c.id
+group by  c.nombre
+having cantidad_encargo >= 4
+
+
+
+select * from encargos 
+select * from clientes 
+select * from vendedores
+select * from  grupos
+select * from coches
+
+-- mostrar el nombre del cliente y el nombre y el id del vendedor que lo registro 
+
+select c.nombre as nombre_cliente, v.nombre  as nombre_vendedor ,v.id as id_vendedor
+from clientes c , vendedores v 
+where c.vendedor_id = v.id
+
+
+-- listar todos los encargos realizados con el modelo delcoche y el nombre del cliente
+
+
+select co.modelo , cl.nombre , en.cantidad 
+from encargos en 
+inner join clientes cl on en.cliente_id = cl.id
+inner join coches co on en.coche_id = co.id
+
+
+-- listar los encargos con el modelo del coche , el nombre del clientre y el nombre de la ciudad , pero unicamente sea de manizales
+
+select co.modelo , cl.nombre, cl.ciudad, en.cantidad
+from encargos en 
+inner join clientes cl on en.cliente_id = cl.id
+inner join coches co on en.coche_id = co.id
+where cl.ciudad =  "ibague" 
+
+
+
+-- optner una lista d elos nombres de los clientes con el acumulado total de los encargos
+
+select  cl.nombre  ,sum(en.cantidad)*co.precio as saldo_total ,sum(en.cantidad) cantidad_encargos
+from encargos en
+inner join clientes cl on  en.cliente_id = cl.id
+inner join coches co on en.coche_id = co.id
+group by cl.nombre 
+
+
+
+
+
+
+
+
+
+
+
